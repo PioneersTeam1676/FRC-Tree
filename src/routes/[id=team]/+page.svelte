@@ -9,6 +9,14 @@
 
     docTitle("Team " + data.data.info[0].team_num);
 
+    //if the primary or secondary color is blank then set to white and black
+    if (data.data.info[0].primary_col == "" || data.data.info[0].primary_col == null || data.data.info[0].primary_col == undefined) {
+        data.data.info[0].primary_col = "#FFFFFF";
+    }
+    if (data.data.info[0].secondary_col == "" || data.data.info[0].secondary_col == null || data.data.info[0].secondary_col == undefined) {
+        data.data.info[0].secondary_col = "#000000";
+    }
+
     const primIsWhite = isWhite(data.data.info[0].primary_col);
     const secIsWhite = isWhite(data.data.info[0].secondary_col);
 
@@ -91,23 +99,6 @@
         margin-bottom: 20px;
     }
 
-    .all-links {
-        display: flex;
-        flex-direction: column;
-        margin: auto;
-        gap: 20px;
-        width: 50%;
-    }
-
-    .link-content {
-        margin: auto;
-    }
-
-    .bg-info {
-        margin-top: 1vh;
-        color: white;
-        font-family: 'Helvetica', 'Arial', sans-serif;
-    }
 
     .pfp-div {
         margin-top: 10vh;
@@ -121,43 +112,106 @@
         object-fit: cover;
     }
 
+  
+
+    .all-links {
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        gap: 15px; /* Reduced gap for smaller spacing */
+        width: 50%; /* Adjusted width for responsiveness */
+        max-width: 600px; /* Limit the maximum width */
+    }
+
     .tree-buttons {
         border: none;
         cursor: pointer;
-        transition: transform 0.2s ease; /* Smooth transition for scaling */
+        transition: transform 0.2s ease;
         background: none;
+        width: 100%; /* Make buttons take full width of the container */
     }
 
     .tree-buttons:hover {
-        transform: scale(1.01); /* Enlarge the button on hover */
-    }
-  
-    .tree-buttons:active {
-        transform: scale(0.99); /* Slightly shrink the button */
+        transform: scale(1.01);
     }
 
+    .tree-buttons:active {
+        transform: scale(0.99);
+    }
+
+    .tree-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background: var(--primary-col);
+        border-radius: 0.5em; /* Slightly smaller border radius */
+        box-shadow: 0 0 8px 1px var(--secondary-col); /* Reduced shadow size */
+        padding: 10px; /* Add padding for better spacing */
+    }
+
+    .button-logo {
+        width: 60px; /* Smaller logo size */
+        height: 60px;
+        border-radius: 5px;
+        padding: 5px;
+        object-fit: contain;
+    }
+
+    .link-content {
+        margin-left: 10px; /* Add spacing between logo and text */
+        flex: 1; /* Allow text to take up remaining space */
+    }
 
     .tree-header {
         color: white;
         font-family: 'Helvetica', 'Arial', sans-serif;
         font-weight: bold;
-        font-size: 2em;
+        font-size: 1.5em; /* Smaller font size */
+        margin: 0;
     }
 
-    .button-logo {
-        width: 200px;
-        height: 200px;
-        border-radius: 5px;
-        padding: 15px;
-        object-fit: contain;
+    .bg-info {
+        margin-top: 0.5vh;
+        color: white;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-size: 1.2em; /* Smaller font size */
     }
 
-    .tree-container {
-        display: flex;
-        background: var(--primary-col);
-        border-radius: 0.76em;
-        /* border: 5px solid var(--secondary-col); */
-        box-shadow: 0 0 10px 2px var(--secondary-col);
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+
+        .main {
+            padding: 0px;
+            padding-bottom: 20px;
+        }
+
+        .description {
+            width: 80%; /* Full width on smaller screens */
+            font-size: 0.9em; /* Adjust font size */
+        }
+
+        .all-links {
+            width: 50%; /* Full width on smaller screens */
+        }
+
+        .tree-container {
+            flex-direction: column; /* Stack content vertically */
+            align-items: center;
+            padding: 15px; /* Increase padding for better spacing */
+        }
+
+        .button-logo {
+            width: 50px; /* Adjust logo size for smaller screens */
+            height: 50px;
+        }
+
+        .tree-header {
+            font-size: 1em; /* Adjust font size */
+        }
+
+        .bg-info {
+            font-size: 0.8em; /* Adjust font size */
+        }
     }
-  
+ 
 </style>

@@ -18,6 +18,10 @@
      * @returns {number} The similarity, between 0.0 and 1.0
      */
     function similarity(s1, s2) {
+
+        s1 = s1.toLowerCase();
+        s2 = s2.toLowerCase();
+
         //if one contains the other, return 1
         if (s1.includes(s2) || s2.includes(s1)) {
             return 1.0;
@@ -79,13 +83,22 @@
 
     let similarityValue = 0;
     let newData = data.data.info.filter((item) => {
-        similarityValue = similarity(JSON.stringify(item.team_num + item.description), query);
+        similarityValue = similarity(JSON.stringify(item.team_num + item.team_full_name), query);
         console.log(similarityValue);
         return similarityValue > 0.5;
     });
     
 
-
+    //if nothing is found and the query is a team number, link to a potential blue alliance page
+    if (newData.length == 0 && !isNaN(query)) {
+        newData = [
+            {
+                team_num: query,
+                team_full_name: "(autofilled data)",
+                pfp: "https://www.thebluealliance.com/avatar/2025/frc" + query + ".png",
+            }
+        ];
+    }
 
 
 </script>

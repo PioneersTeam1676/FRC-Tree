@@ -2,7 +2,7 @@ import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "@sveltejs/kit";
 import { deleteSession, getSessionBySessionId, type Session } from "$lib/db/sessions";
 import { responseError, responseSuccess, HTTP } from "$lib/apis";
-import { mysqlConnection } from "$lib/db/mysql";
+import { mysqlConnection, mysqlPool } from "$lib/db/mysql";
 
 export const GET: RequestHandler = async ({ cookies }) => {
     const sessionId = cookies.get("sessionId");

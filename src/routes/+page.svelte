@@ -373,7 +373,7 @@
   }
 
   .btn-cta {
-    width: 100%;
+    width: 95%;
     font-size: 1.2em;
     padding: 0.8em 1em;
     position: relative;

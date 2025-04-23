@@ -1,8 +1,10 @@
-import { mysqlConnection } from "$lib/db/mysql";
+import { mysqlConnection, mysqlPool } from "$lib/db/mysql";
 
 export async function load( { params }) {
 
-    let connection = await mysqlConnection();
+    // let connection = await mysqlConnection();
+    let connection = await mysqlPool();
+
 
     try {
         let info = await connection

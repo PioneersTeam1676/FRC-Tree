@@ -1,7 +1,7 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "@sveltejs/kit";
 import { createHashAndSalt, createSessionForUser, hashAndSaltPassword } from "$lib/db/sessions";
-import { getUserByEmail, mysqlConnection, type User } from "$lib/db/mysql";
+import { getUserByEmail, mysqlConnection, mysqlPool, type User } from "$lib/db/mysql";
 import { responseError, responseSuccess, HTTP } from "$lib/apis";
 
 export const POST: RequestHandler = async ({ request, params, cookies }) => {

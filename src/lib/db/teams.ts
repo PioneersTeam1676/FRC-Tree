@@ -1,6 +1,6 @@
 let TBA_KEY = "va0mdQ50z5Oh5nLmYX6TQGUiNsMDHdLUHszu6vGRT8hpGEnzpcYFgJQ2iM6rHUVV	";
 import { error } from "@sveltejs/kit";
-import { mysqlConnection } from "./mysql";
+import { mysqlConnection, mysqlPool } from "./mysql";
 
 export type Team = {
     links: {
@@ -21,7 +21,9 @@ export type Team = {
 }
 
 export async function getTeamFromDB(teamNum: number): Promise<Team | undefined> {
-    let connection = await mysqlConnection();
+    // let connection = await mysqlConnection();
+    let connection = await mysqlPool();
+
 
     let links, info;
     try {

@@ -1,7 +1,7 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "@sveltejs/kit";
 import { createHashAndSalt } from "$lib/db/sessions";
-import { mysqlConnection } from "$lib/db/mysql";
+import { mysqlConnection, mysqlPool } from "$lib/db/mysql";
 import { responseError, responseSuccess, HTTP } from "$lib/apis";
 
 export const POST: RequestHandler = async ({ request, params }) => {
@@ -32,7 +32,8 @@ export const POST: RequestHandler = async ({ request, params }) => {
     }
 
     let joinCode;
-    const connection = await mysqlConnection();
+    // const connection = await mysqlConnection();
+    let connection = await mysqlPool();
     try {
         let joinCodes = await connection
             .query(`SELECT * FROM frclink_joincodes WHERE code = ? AND team_num = ? AND email = ? LIMIT 1`, [code, team_num, email])

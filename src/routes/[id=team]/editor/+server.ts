@@ -2,7 +2,7 @@ import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "@sveltejs/kit";
 import { getSessionBySessionId, type Session } from "$lib/db/sessions";
 import { responseError, responseSuccess, HTTP } from "$lib/apis";
-import { mysqlConnection } from "$lib/db/mysql";
+import { mysqlConnection, mysqlPool } from "$lib/db/mysql";
 
 export const POST: RequestHandler = async ({ request, cookies, params }) => {
     const sessionId = cookies.get("sessionId");
@@ -33,7 +33,8 @@ export const POST: RequestHandler = async ({ request, cookies, params }) => {
     const { team_full_name, pfp, description, primary_col, secondary_col, location } = json;
     console.log(json);
 
-    const connection = await mysqlConnection();
+    // const connection = await mysqlConnection();
+    let connection = await mysqlPool();
     connection.query("UPDATE frclink_info SET team_full_name = ?, pfp = ?, description = ?, primary_col = ?, secondary_col = ?, location = ? WHERE team_num = ?", [
         team_full_name, pfp, description, primary_col, secondary_col, location, team
     ]);

@@ -2,6 +2,24 @@ import mysql from "mysql2/promise";
 import CREDS from "./db.json"
 
 let connection = null;
+let pool = null;
+
+export function mysqlPool() {
+    if (!pool) {
+        // CREDS looks like 
+        // export default {
+        // host: ***
+        // user: ***
+        // password: ***
+        // database: ***
+        // }
+        // CREDS.enableKeepAlive = true;
+        // CREDS.connectionLimit = 20;
+
+        pool = mysql.createPool(CREDS);
+    }
+    return pool;
+}
 
 export function mysqlConnection() {
 

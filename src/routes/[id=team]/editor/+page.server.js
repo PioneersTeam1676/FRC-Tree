@@ -1,4 +1,4 @@
-import { mysqlConnection } from "$lib/db/mysql";
+import { mysqlConnection, mysqlPool } from "$lib/db/mysql";
 import { getSessionBySessionId } from "$lib/db/sessions";
 import { error, redirect } from "@sveltejs/kit";
 import { HTTP } from "$lib/apis";
@@ -7,6 +7,7 @@ export async function load({ params, cookies }) {
 
     const sessionId = cookies.get("sessionId");
     const teamNotNumber = params.id;
+    // console.log(params);
     const team = Number(teamNotNumber);
 
     if (!Number.isInteger(team)) {
@@ -26,16 +27,18 @@ export async function load({ params, cookies }) {
 
     const isAdmin = session.user.flag_is_admin === 1;
 
-    let connection = await mysqlConnection();
+    // let connection = await mysqlConnection();
+    let connection = await mysqlPool();
+    
 
     try {
         let links = await connection
-            .query(`SELECT * FROM frclink_links WHERE team_num = ?`, [params.id])
+            .query(`SELECT * FROM frclink_links WHERE team_num = ?`, params.id)
             .then(([rows, fields]) => {
                 return rows;
             });
         let info = await connection
-            .query(`SELECT * FROM frclink_info WHERE team_num = ?`, [params.id])
+            .query(`SELECT * FROM frclink_info WHERE team_num = ? LIMIT 1`, params.id)
             .then(([rows, fields]) => {
                 return rows;
             });

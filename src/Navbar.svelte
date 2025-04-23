@@ -49,7 +49,7 @@ onMount(() => {
 <div class="header">
     <a href="/"><img class="logo-img" src={logo} alt="logo" /></a>
     <a href="/"><div class="header-title font">FRTree</div></a>
-    <div class="custom-search-container">
+    <div class="custom-search-container hide-on-small-screen">
         <input 
             type="search" 
             placeholder="Search teams..." 
@@ -63,9 +63,11 @@ onMount(() => {
         <button class="btn btn-1 font show-on-small-screen dropbtn" onclick={() => {dropMenuDown()}}>Menu</button>
         <div class="dropdown">
             <div id="myDropdown" class="dropdown-content show-on-small-screen {show ? "show" : ""}">
-                <a href="#" class="show-on-small-screen">Gallery</a>
-                <a href="#" class="show-on-small-screen">Sign Up</a>
-                <a href="#" class="show-on-small-screen">Sign In</a>
+                <a href="/gallery" class="show-on-small-screen">Gallery</a>
+                <hr>
+                <a href="/sign_up" class="show-on-small-screen">Sign Up</a>
+                <hr>
+                <a href="/sign_in" class="show-on-small-screen">Sign In</a>
             </div>
         </div>    
 
@@ -108,7 +110,7 @@ onMount(() => {
         /* background: linear-gradient(135deg, var(--color2) 0%, var(--color5) 100%) !important; */
         background: var(--color4);
         position: relative;
-        overflow: hidden;
+        /*overflow: hidden;*/
         position: sticky; 
         top: 0; 
         z-index: 1000;
@@ -239,6 +241,7 @@ onMount(() => {
         .dropdown {
             position: relative;
             display: inline-block;
+            /* z-index: 10; */
         }
 
         .dropdown-content {
@@ -247,9 +250,19 @@ onMount(() => {
             background-color: #007acc;
             min-width: 85px; /* You can set this to match the button width */
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
+            z-index: 10;
             left: -90px; /* Align with the left edge of the button */
             top: 20px; /* Position it directly below the button */
+            margin: 3px;
+            border-radius: 5px;
+        }
+
+        .dropdown-content a {
+            color: white !important;
+        }
+
+        .dropdown-content hr {
+            margin: 0px;
         }
 
         /* Links inside the dropdown */
