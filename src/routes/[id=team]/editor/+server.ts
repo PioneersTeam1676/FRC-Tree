@@ -6,7 +6,7 @@ import { mysqlConnection } from "$lib/db/mysql";
 
 export const POST: RequestHandler = async ({ request, cookies, params }) => {
     const sessionId = cookies.get("sessionId");
-    const teamNotNumber = params.team;
+    const teamNotNumber = params.id;
     const team = Number(teamNotNumber);
 
     if (!Number.isInteger(team)) {

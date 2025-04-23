@@ -20,6 +20,7 @@
     let loaded = $state(false);
     
     async function load() {
+        console.log(data);
         // Ensure data is defined before accessing its properties
         if (data?.data?.info?.[0]) {
             formData = {...data.data.info[0]};
