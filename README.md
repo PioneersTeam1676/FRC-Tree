@@ -1,7 +1,7 @@
-# FRTree
-This is the repository for the FRTree Apps project
+# *FRC* Tree
+This is the repository for the *FRC* Tree Apps project
 
-## Nate testing
+<!-- ## Nate testing
 Nate remember to test all the following things before committing:
 1. Home page loads
 2. Gallery page loads
@@ -10,15 +10,15 @@ Nate remember to test all the following things before committing:
 5. Team data loads
 6. Styling looks correct
 7. Re-read every line of code to make sure nate was locked in while coding.
-8. Check if nate was locked in while coding
+8. Check if nate was locked in while coding -->
 
 ## Currently known bugs
 * Search page doesn't work if nothing is entered
 * Search page doesn't work with auto-filled teams
 
-## Nate to do
+<!-- ## Nate to do
 * Finish editor (add saving, add link list)
-* Allow users to sign up to teams with no information in them
+* Allow users to sign up to teams with no information in them -->
 
 ## Options for authentication
 

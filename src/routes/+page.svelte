@@ -46,7 +46,7 @@
     </div>
   </div>
   <div class="half content-container">
-    <h1 class="title">FRTree</h1>
+    <h1 class="title"><em>FRC</em> Tree</h1>
     <p class="subtitle">An innovative social media hub for FRC Teams, by the <span class="no-wrap">Pascack Pi-oneers</span></p>
     <div class="divider"></div>
     <div class="row info-row">
@@ -75,7 +75,7 @@
     <h2 class="section-title">Mission Statement</h2>
     <div class="section-divider"></div>
     <p class="section-text">
-      Our goal with FRTree is to make a standardized social media platform for First Robotics Competition teams. We hope our product will induce collaboration and communication between teams, which is one of the FIRST core values we find so important. The features we add to FRTree will prioritize ease of use, information-first layout, and customizability for team administrators.
+      Our goal with <em>FRC</em> Tree is to make a standardized social media platform for First Robotics Competition teams. We hope our product will induce collaboration and communication between teams, which is one of the <em>FIRST</em> core values we find so important. The features we add to <em>FRC</em> Tree will prioritize ease of use, information-first layout, and customizability for team administrators.
     </p>
   </div>
 </div>

@@ -2,6 +2,9 @@ node_modules
 
 .htaccess
 src/lib/db/db.json.js
+*db.json.*
+*db.json.ts
+db.json.ts
 
 # Output
 .output

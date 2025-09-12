@@ -13,7 +13,7 @@
             banner: "https://team1676.com/main/wp-content/uploads/2024/02/team24-1-1024x312.jpg",
             links: [
                 {
-                    name: "FRTree",
+                    name: "<em>FRC</em> Tree",
                     description:
                         "A Linktree-adjacent app that serves as a directory for FRC teams to share their projects, websites, and other links.",
                     urls: [],
