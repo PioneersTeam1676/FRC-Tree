@@ -28,7 +28,6 @@
 </button>
 
 <style>
-    
     .item {
         display: flex;
         align-items: center; /* Center vertically */
@@ -79,6 +78,13 @@
         display: flex;
         width: 100%;
     }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+    .card:hover { border-color: var(--border-medium); box-shadow: var(--shadow-md); }
 
 
     /* Responsive design */

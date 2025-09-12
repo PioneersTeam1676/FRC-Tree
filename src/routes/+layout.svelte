@@ -4,18 +4,12 @@
     import "./global.css";
     import Navbar from "../Navbar.svelte";
     import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
     import { onMount } from "svelte";
     
-    let { children, data } = $props();
+    // Include children for Svelte 5 render API (replaces deprecated <slot />)
+    let { data, children } = $props();
     let loggedInAs = data.data.loggedInAs;
     let loggedIn = data.data.loggedIn;
-
-    $effect(() => {
-        if ($page.url.pathname === '/' && $page.route.id !== '/') {
-            goto('/'); // Force homepage if route is misidentified
-        }
-    });
     
     // Background particles
     let particles = [];
@@ -336,7 +330,9 @@
     <Navbar loggedIn={loggedIn} loggedInAs={loggedInAs} />
 
     <div class="children">
-        {@render children()}
+        {#if children}
+            {@render children()}
+        {/if}
     </div>
 </div>
 
@@ -350,204 +346,25 @@
         z-index: 1;
     }
 
-    .background-effect {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-        will-change: transform;
-        transform: translateZ(0); /* Force GPU acceleration */
-        backface-visibility: hidden; /* Reduce painting */
-    }
-
-    :global(html) {
-        background-color: var(--color3);
-        scroll-behavior: smooth;
-    }
-
-    .children {
-        width: 100%;
-        min-height: 90vh;
-        background-color: transparent;
-        position: relative;
-        z-index: 2;
-        contain: content; /* Improve scroll performance by isolating content */
-    }
-   
     :global(html),
     :global(body) {
         margin: 0;
         width: 100%;
         height: 100%;
         overflow-x: hidden;
-        overscroll-behavior-y: none; /* Prevent bouncing on some browsers */
-        /* Remove gray by forcing a blue gradient background */
-        background: linear-gradient(135deg, var(--color3) 0%, var(--color5) 100%) !important;
-        background-attachment: fixed !important;
+        overscroll-behavior-y: none;
+        background: var(--bg-primary) !important;
+        color: var(--text-secondary);
     }
 
-    /* Custom scrollbar */
-    :global(::-webkit-scrollbar) {
-        width: 8px;
+    /* Remove legacy gradient and shimmer overrides */
+    :global(.route-content::before),
+    :global(main::before),
+    :global(.container::before),
+    :global(.page-container::before) {
+        content: none !important;
     }
 
-    :global(::-webkit-scrollbar-track) {
-        background: var(--color5);
-    }
-
-    :global(::-webkit-scrollbar-thumb) {
-        background: var(--color1);
-        border-radius: 4px;
-    }
-
-    :global(::-webkit-scrollbar-thumb:hover) {
-        background: var(--color1_em);
-    }
-
-    /* Apply neon text glow to headers */
-    :global(h1) {
-        text-shadow: 0 0 4px rgba(0, 195, 255, 0.2), 0 0 8px rgba(0, 195, 255, 0.2); /* Reduced glow intensity */
-    }
-
-    /* Add specific styling for the navbar search if needed */
-    :global(.navbar .search-container) {
-        min-width: 200px;
-        max-width: 300px;
-    }
-    
-    :global(.navbar .search-input) {
-        background: rgba(10, 17, 40, 0.4) !important;
-        transition: all 0.3s ease;
-    }
-    
-    :global(.navbar .search-input:focus) {
-        background: rgba(10, 17, 40, 0.7) !important;
-    }
-
-    /* Custom search styling with inline gradient underline */
-    :global(.custom-search-container) {
-        position: relative;
-        margin: 0 1rem;
-        min-width: 200px;
-    }
-
-    :global(.custom-search-input) {
-        width: 100%;
-        padding: 8px 12px;
-        background: rgba(10, 17, 40, 0.5) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 4px !important;
-        outline: none !important;
-        font-size: 1em;
-    }
-
-    :global(.search-underline) {
-        position: absolute;
-        bottom: -2px;
-        left: 50%;
-        transform: translateX(-50%);
-        height: 2px;
-        width: 0;
-        background: linear-gradient(to right, transparent, var(--color1), transparent);
-        border-radius: 3px;
-        transition: all 0.3s ease;
-        z-index: 2;
-    }
-
-    :global(.custom-search-input:focus + .search-underline) {
-        width: 100%;
-        height: 3px;
-        box-shadow: 0 0 10px rgba(0, 195, 255, 0.5);
-        animation: pulsateSearch 2s infinite alternate;
-    }
-
-    :global(.custom-search-container:hover .search-underline) {
-        width: 80%;
-    }
-
-    :global(.custom-search-input::placeholder) {
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    :global(.custom-search-input:focus::placeholder) {
-        color: rgba(0, 195, 255, 0.7);
-    }
-
-    /* CSS optimizations for better performance */
-    :global(.search-underline),
-    :global(.custom-search-input),
-    :global(.btn),
-    :global(h1),
-    :global(h2),
-    :global(.feature-item) {
-        will-change: transform, opacity;
-        transform: translateZ(0);
-        backface-visibility: hidden;
-    }
-    
-    /* Optimize animations to use GPU-accelerated properties */
-    :global(.feature-item:hover),
-    :global(.btn:hover) {
-        will-change: transform, box-shadow;
-    }
-
-    @keyframes pulsateSearch {
-        0% { opacity: 0.7; box-shadow: 0 0 5px rgba(0, 195, 255, 0.3); }
-        100% { opacity: 1; box-shadow: 0 0 15px rgba(0, 195, 255, 0.5); }
-    }
-
-    /* Additional performance optimization */
-    @media (max-width: 768px) {
-        /* Simplify animations on mobile */
-        @keyframes pulsateSearch {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-    }
-
-    /* Apply consistent styling to all routes */
-    :global(.route-content) {
-        background: transparent !important;
-        position: relative;
-        z-index: 2;
-    }
-    
-    /* Add galaxy-like shimmer to all pages */
-    :global(.route-content::before) {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent 30%, rgba(0, 195, 255, 0.05) 40%, rgba(0, 195, 255, 0.05) 60%, transparent 70%);
-        background-size: 200% 200%;
-        animation: shimmer 10s infinite linear;
-        pointer-events: none;
-        z-index: -1;
-    }
-    
-    @keyframes shimmer {
-        0% { background-position: 100% 0; }
-        100% { background-position: -100% 0; }
-    }
-    
-    /* Ensure section styling is consistent across all pages */
-    :global(.section) {
-        width: 100%;
-        padding: 4rem 0;
-        display: flex;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        background: transparent !important;
-    }
-
-    /* Ensure all route content has consistent styling */
     :global(.route-content),
     :global(main),
     :global(.container),
@@ -557,89 +374,10 @@
         z-index: 2;
         min-height: 80vh;
     }
-    
-    /* Add shimmer effect to all pages consistently */
-    :global(.route-content::before),
-    :global(main::before),
-    :global(.container::before),
-    :global(.page-container::before) {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent 30%, rgba(0, 195, 255, 0.05) 40%, rgba(0, 195, 255, 0.05) 60%, transparent 70%);
-        background-size: 200% 200%;
-        animation: shimmer 10s infinite linear;
-        pointer-events: none;
-        z-index: -1;
-    }
-    
-    /* Ensure text colors are consistent */
-    :global(body), :global(p), :global(div), :global(span) {
-        color: #e6f1ff;
-    }
-    
-    /* Make sure all sections use consistent styling */
-    :global(.section),
-    :global(section) {
-        background: transparent !important;
-        position: relative;
-        z-index: 2;
-        padding: 2rem 0;
-    }
-    
-    /* Add background to cards/content blocks consistently */
-    :global(.card),
-    :global(.content-block),
-    :global(.team-card) {
-        background: rgba(22, 33, 62, 0.5) !important;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 195, 255, 0.1);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(5px);
-    }
-    
-    /* Consistent header styling */
-    :global(h1), :global(h2), :global(h3) {
-        color: white;
-        text-shadow: 0 0 4px rgba(0, 195, 255, 0.2), 0 0 8px rgba(0, 195, 255, 0.2);
-    }
-    
-    /* Consistent styling for all dividers */
-    :global(.divider),
-    :global(hr) {
-        border: none;
-        height: 2px;
-        background: linear-gradient(to right, transparent, var(--color1), transparent);
-        margin: 1.5rem 0;
-        opacity: 0.7;
-    }
 
-    /* Additional selectors to ensure consistent styling for all routes */
-    :global(.main), 
-    :global(main),
-    :global(.page),
-    :global(.gallery-page),
-    :global(.profile-page),
-    :global(.team-page),
-    :global(.editor-page),
-    :global(.signin-page),
-    :global(.signup-page) {
-        background: transparent !important;
-        color: #e6f1ff;
-        min-height: 70vh;
-        position: relative;
-        z-index: 2;
-        padding-top: 1rem;
-    }
-    
-    /* Further ensure all route types have consistent coloring */
-    :global(.sub-page) {
-        background: transparent !important;
-        min-height: 70vh;
-        position: relative;
-        z-index: 2;
-    }
+    /* Scrollbar in dark theme */
+    :global(::-webkit-scrollbar) { width: 8px; }
+    :global(::-webkit-scrollbar-track) { background: var(--bg-secondary); }
+    :global(::-webkit-scrollbar-thumb) { background: var(--primary); border-radius: 4px; }
+    :global(::-webkit-scrollbar-thumb:hover) { background: var(--primary-light); }
 </style>

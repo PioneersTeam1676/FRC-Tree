@@ -29,15 +29,74 @@ export const POST: RequestHandler = async ({ request, cookies, params }) => {
         return responseError(`session not authorized for that team`, HTTP.UNAUTHORIZED);
     }
 
-    const json = await request.json();
-    const { team_full_name, pfp, description, primary_col, secondary_col, location } = json;
-    console.log(json);
+    const body = await request.json();
+    const { team_full_name, pfp, description, primary_col, secondary_col, location, links = [], deletedIds = [] } = body;
+    console.log(body);
 
-    // const connection = await mysqlConnection();
-    let connection = await mysqlPool();
-    connection.query("UPDATE frclink_info SET team_full_name = ?, pfp = ?, description = ?, primary_col = ?, secondary_col = ?, location = ? WHERE team_num = ?", [
-        team_full_name, pfp, description, primary_col, secondary_col, location, team
-    ]);
+    const pool = await mysqlPool();
 
-    return responseSuccess("Temporary", {});
+    // Upsert team info (create row if missing)
+    try {
+        const [rows]: any = await pool.query(`SELECT team_num FROM frclink_info WHERE team_num = ? LIMIT 1`, [team]);
+        if (rows.length === 0) {
+            await pool.query(
+                `INSERT INTO frclink_info (team_num, team_full_name, pfp, description, primary_col, secondary_col, location, uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [team, team_full_name ?? '', pfp ?? '', description ?? '', primary_col ?? '#00c3ff', secondary_col ?? '#111111', location ?? '', session.uid]
+            );
+        } else {
+            await pool.query(
+                `UPDATE frclink_info SET team_full_name = ?, pfp = ?, description = ?, primary_col = ?, secondary_col = ?, location = ? WHERE team_num = ?`,
+                [team_full_name ?? '', pfp ?? '', description ?? '', primary_col ?? '#00c3ff', secondary_col ?? '#111111', location ?? '', team]
+            );
+        }
+    } catch (e) {
+        console.trace("Error upserting team info", e);
+        return responseError("failed to save team info", HTTP.INTERNAL_SERVER_ERROR);
+    }
+
+    // Delete removed links
+    if (Array.isArray(deletedIds) && deletedIds.length > 0) {
+        try {
+            await pool.query(
+                `DELETE FROM frclink_links WHERE id IN (${deletedIds.map(() => '?').join(',')}) AND team_num = ?`,
+                [...deletedIds, team]
+            );
+        } catch (e) {
+            console.trace("Error deleting links", e);
+            return responseError("failed to delete links", HTTP.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Upsert links from payload
+    if (Array.isArray(links)) {
+        for (const link of links) {
+            const { id, title = '', description = '', url = '', icon = '' } = link ?? {};
+            try {
+                if (id) {
+                    await pool.query(
+                        `UPDATE frclink_links SET title = ?, description = ?, url = ?, icon = ?, uid = ? WHERE id = ? AND team_num = ?`,
+                        [title, description, url, icon, session.uid, id, team]
+                    );
+                } else {
+                    await pool.query(
+                        `INSERT INTO frclink_links (team_num, icon, description, url, uid, title) VALUES (?, ?, ?, ?, ?, ?)`,
+                        [team, icon, description, url, session.uid, title]
+                    );
+                }
+            } catch (e) {
+                console.trace("Error upserting link", e);
+                return responseError("failed to save links", HTTP.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+
+    // Fetch refreshed info & links so client can immediately reflect persisted state (with new link IDs)
+    try {
+        const [infoRows]: any = await pool.query(`SELECT * FROM frclink_info WHERE team_num = ? LIMIT 1`, [team]);
+        const [linkRows]: any = await pool.query(`SELECT * FROM frclink_links WHERE team_num = ? ORDER BY id ASC`, [team]);
+        return responseSuccess("Saved changes", { info: infoRows, links: linkRows });
+    } catch (e) {
+        console.trace("Error fetching refreshed data", e);
+        return responseSuccess("Saved changes", {}); // fallback (still report success; client can reload manually)
+    }
 };

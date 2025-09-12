@@ -22,7 +22,7 @@ export function docTitle(title: string, override: boolean = false): void {
         if (override) {
             document.title = title;
         } else {
-            document.title = "FRTree - " + title;
+            document.title = "FRC Tree - " + title;
         }
     });
 }

@@ -4,7 +4,7 @@
 
     import { onMount } from "svelte";
     onMount(() => {
-        document.title = "FRTree";
+        document.title = "<em>FRC</em> Tree";
     });
 
     function search(event) {
@@ -48,7 +48,7 @@ onMount(() => {
 
 <div class="header">
     <a href="/"><img class="logo-img" src={logo} alt="logo" /></a>
-    <a href="/"><div class="header-title font">FRTree</div></a>
+    <a href="/"><div class="header-title font"><em>FRC</em> Tree</div></a>
     <div class="custom-search-container hide-on-small-screen">
         <input 
             type="search" 
@@ -104,100 +104,61 @@ onMount(() => {
 
     .header {
         display: flex;
-        align-items: center; /* Center vertically */
-        width: 100vw;
-        height: 10vh;
-        /* background: linear-gradient(135deg, var(--color2) 0%, var(--color5) 100%) !important; */
-        background: var(--color4);
-        position: relative;
-        /*overflow: hidden;*/
-        position: sticky; 
-        top: 0; 
+        align-items: center;
+        width: 100%;
+        height: 70px;
+        background: var(--bg-card);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border-light);
+        position: sticky;
+        top: 0;
         z-index: 1000;
+        padding: 0 var(--space-lg);
     }
 
-    /* .header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, transparent 30%, rgba(0, 195, 255, 0.05) 40%, rgba(0, 195, 255, 0.05) 60%, transparent 70%);
-        background-size: 200% 200%;
-        animation: shimmer 10s infinite linear;
-        pointer-events: none;
-    } */
-
-    /* @keyframes shimmer {
-        0% { background-position: 100% 0; }
-        100% { background-position: -100% 0; }
-    } */
-
     .logo-img {
-        margin-left: 0.7vw;
-        height: 60px;
+        height: 40px;
+        margin-right: var(--space-sm);
     }
 
     .header-pfp {
-        height: 60px;
-        width: 60px;
-        border-radius: 50%;
-        margin-right: 1vw;
+        height: 40px;
+        width: 40px;
+        border-radius: var(--radius-full);
+        border: 2px solid var(--border-light);
+        transition: border-color 0.2s ease;
     }
 
-    /* Custom search styling with inline gradient underline */
+    .header-pfp:hover {
+        border-color: var(--primary);
+    }
+
+    /* Search styling */
     .custom-search-container {
-        position: relative;
-        margin: 0 1rem;
-        min-width: 200px;
+        flex: 1;
+        max-width: 400px;
+        margin: 0 var(--space-lg);
     }
 
     .custom-search-input {
         width: 100%;
-        padding: 8px 12px;
-        background: rgba(10, 17, 40, 0.5);
-        color: white;
-        border: none;
-        border-radius: 4px;
+        padding: var(--space-sm) var(--space-md);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
         outline: none;
-        font-size: 1em;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
     }
 
-    .search-underline {
-        position: absolute;
-        bottom: -2px;
-        left: 50%;
-        transform: translateX(-50%);
-        height: 2px;
-        width: 0;
-        background: linear-gradient(to right, transparent, var(--color1), transparent);
-        border-radius: 3px;
-        transition: all 0.3s ease;
-    }
-
-    .custom-search-input:focus + .search-underline {
-        width: 100%;
-        height: 3px;
-        box-shadow: 0 0 10px rgba(0, 195, 255, 0.5);
-        animation: pulsateSearch 2s infinite alternate;
-    }
-
-    .custom-search-container:hover .search-underline {
-        width: 80%;
+    .custom-search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 195, 255, 0.1);
     }
 
     .custom-search-input::placeholder {
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    .custom-search-input:focus::placeholder {
-        color: rgba(0, 195, 255, 0.7);
-    }
-
-    @keyframes pulsateSearch {
-        0% { opacity: 0.7; box-shadow: 0 0 5px rgba(0, 195, 255, 0.3); }
-        100% { opacity: 1; box-shadow: 0 0 15px rgba(0, 195, 255, 0.5); }
+        color: var(--text-muted);
     }
 
     :global(html),
@@ -208,21 +169,21 @@ onMount(() => {
     }
 
     a {
-        color: black;
+        color: var(--text-primary);
         text-decoration: none;
     }
 
-    .header-pfp {
-        height: 60px;
-        width: 60px;
-        border-radius: 50%;
-        margin-right: 1vw;
-    }
+
 
     .header-title {
-        padding-left: 10px;
-        font-size: 2em;
-        color: var(--color1);
+        font-size: 1.5rem;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+    }
+
+    .header-title em {
+        color: var(--primary);
+        font-style: italic;
     }
 
     .show-on-small-screen {
@@ -247,34 +208,38 @@ onMount(() => {
         .dropdown-content {
             display: none;
             position: absolute;
-            background-color: #007acc;
-            min-width: 85px; /* You can set this to match the button width */
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            min-width: 150px;
             z-index: 10;
-            left: -90px; /* Align with the left edge of the button */
-            top: 20px; /* Position it directly below the button */
-            margin: 3px;
-            border-radius: 5px;
-        }
-
-        .dropdown-content a {
-            color: white !important;
+            right: 0;
+            top: 100%;
+            margin-top: var(--space-xs);
         }
 
         .dropdown-content hr {
-            margin: 0px;
+            margin: 0;
+            border: none;
+            border-top: 1px solid var(--border-light);
         }
 
         /* Links inside the dropdown */
-            .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
+        .dropdown-content a {
+            color: var(--text-primary);
+            padding: var(--space-md);
             text-decoration: none;
             display: block;
+            font-size: 0.875rem;
+            transition: background-color 0.2s ease;
         }
 
         /* Change color of dropdown links on hover */
-        .dropdown-content a:hover {background-color: #ddd;}
+        .dropdown-content a:hover {
+            background-color: var(--bg-tertiary);
+        }
 
         /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
         .show {display:block;}

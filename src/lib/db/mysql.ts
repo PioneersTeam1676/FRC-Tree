@@ -125,3 +125,34 @@ export async function getUserByUID(uid: number): Promise<User | undefined> {
 
     return user;
 }
+
+export async function getUserByTeamNum(team_num: number): Promise<User | undefined> {
+    const connection = await mysqlConnection();
+    const users = await connection
+        .query(`SELECT * FROM frclink_users WHERE team_num = ? ORDER BY created DESC LIMIT 1`, team_num)
+        .then(([rows, fields]) => {
+            return rows;
+        });
+
+    if (users.length === 0) {
+        return undefined;
+    }
+
+    const userRaw = users[0];
+    const created = new Date(userRaw.created);
+    if (created.getFullYear() !== new Date().getFullYear()) {
+        return undefined;
+    }
+
+    const user: User = {
+        uid: Number(userRaw.uid),
+        created: created,
+        joincodeid: Number(userRaw.joincodeid),
+        team_num: Number(userRaw.team_num),
+        email: userRaw.email,
+        passhash: userRaw.passhash,
+        salt: userRaw.salt,
+        flag_is_admin: userRaw.flag_is_admin,
+    };
+    return user;
+}

@@ -147,19 +147,12 @@
 </div>
 
 <style>
-    /* :root {
-        --color1: #123524;
-        --color2: #3E7B27;
-        --color3: #85A947;
-        --color4: #EFE3C2;
-    } */
-
     :global(html) {
-        color: var(--color2);
+        color: var(--text-secondary);
     }
     :global(body) {
-        margin: 0px;
-        background: var(--color3);
+        margin: 0;
+        background: var(--bg-primary);
     }
 
     .main {
@@ -193,7 +186,7 @@
 
     .bg-info {
         margin-top: 1vh;
-        color: white;
+        color: var(--text-secondary);
         font-family: "Helvetica", "Arial", sans-serif;
     }
 
@@ -209,13 +202,14 @@
     }
 
     .tree-buttons {
-        background: var(--color2);
+        background: var(--bg-secondary);
+        color: var(--text-primary);
         border-radius: 10px;
         border: none;
         width: 50vw;
         cursor: pointer;
         transition: transform 0.2s ease; /* Smooth transition for scaling */
-        box-shadow: 0 0 5px 0px black;
+        box-shadow: var(--shadow-sm);
     }
 
     .tree-buttons:hover {
@@ -227,7 +221,7 @@
     }
 
     .tree-header {
-        color: white;
+        color: var(--text-primary);
         font-family: "Helvetica", "Arial", sans-serif;
         font-weight: bold;
     }

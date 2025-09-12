@@ -44,14 +44,12 @@ export async function getTeamFromDB(teamNum: number): Promise<Team | undefined> 
         return undefined;
     }
 
-    if (links.length == 0 || info.length == 0) {
-        return undefined;
+    // Return whatever exists. If info row exists but no links yet, we still want to show user-entered info.
+    if (info.length === 0) {
+        return undefined; // no info row means we truly have nothing stored
     }
 
-    return {
-        links,
-        info,
-    }
+    return { links, info };
 }
 
 export async function getTeamFromTBA(teamNum: number): Promise<Team | undefined> {
