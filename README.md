@@ -16,6 +16,10 @@ Nate remember to test all the following things before committing:
 * Search page doesn't work if nothing is entered
 * Search page doesn't work with auto-filled teams
 
+## Recent changes
+* Editor: Added preset icon selector (YouTube, Instagram, Twitter/X, Facebook, GitHub) with a Custom URL option. Preset selection auto-fills the icon URL; switching to Custom lets you supply any image URL.
+* Sign Up: Enforces uniqueness of both email and team number. Only one user account may be created per FRC team number and an email cannot be reused. Attempts to reuse either return HTTP 409 with a descriptive message.
+
 <!-- ## Nate to do
 * Finish editor (add saving, add link list)
 * Allow users to sign up to teams with no information in them -->

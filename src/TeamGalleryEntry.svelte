@@ -19,65 +19,65 @@
 
 </script>
 
-<button bind:this={btn} type="button" id="team{team_num}-image" class="item" onclick={() => goToTeam(team_num)} aria-label="Go to team {team_num}">
-    <img class="pfp" src={pfp} alt="Team Logo" />
-    <div class="text-grid">
+<button
+    bind:this={btn}
+    type="button"
+    id="team{team_num}-tile"
+    class="item"
+    onclick={() => goToTeam(team_num)}
+    aria-label="Go to team {team_num} profile"
+>
+    <div class="media">
+        <img class="pfp" src={pfp} alt="Team {team_num} logo" />
+    </div>
+    <div class="text">
         <p class="team-number">Team {team_num}</p>
-        <p class="team-name">{team_full_name}</p>
+        <p class="team-name" title={team_full_name}>{team_full_name}</p>
     </div>
 </button>
 
 <style>
     .item {
-        display: flex;
-        align-items: center; /* Center vertically */
-        width: calc(25% - 50px); /* 4 items per row with some margin */
-        margin: 30px; /* Space between items */
-        background: var(--color2);
-        border-radius: 5px;
-        box-shadow: 0 0 5px 0px black;
-        padding: 10px;
+        position: relative;
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 1rem;
+        width: 100%;
+        background: var(--bg-card);
+        border: 1.5px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
         cursor: pointer;
-        transition: transform 0.2s ease; /* Smooth transition for scaling */
-        border: 2px solid;
-        height: 200px; /* Fixed height for all items */
+        text-align: left;
+        transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+        box-shadow: var(--shadow-sm);
+        min-height: 170px;
     }
     .item:hover {
-        transform: scale(1.01); /* Enlarge the button on hover */
+        border-color: var(--border-medium);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+    .item:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+    .item:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 3px;
     }
 
-    .item:active {
-        transform: scale(0.99); /* Slightly shrink the button */
-    }
-
+    .media { display:flex; align-items:center; justify-content:center; }
     .item img {
-        width: 150px; /* Adjust image size as needed */
-        height: 150px; /* Adjust image size as needed */
-        margin-right: 10px; /* Space between image and text */
-        border-radius: 50%; /* Make it a circle */
-
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
         object-fit: cover;
+        box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 3px var(--border-light);
+        transition: box-shadow .25s ease;
     }
+    .item:hover img { box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 3px var(--primary); }
 
-    .team-number {
-        margin: 0; /* Remove default margin */
-        font-size: 2em;
-        font-weight: bold;
-        color: white;
-        text-align: center; /* Center the text horizontally */
-    }
-
-    .team-name {
-        font-size: 1.5em;
-        color: white;
-        text-align: center;
-    }
-
-    .text-grid {
-        flex-direction: column;
-        display: flex;
-        width: 100%;
-    }
+    .text { display:flex; flex-direction:column; justify-content:center; min-width:0; }
+    .team-number { margin:0 0 .25rem 0; font-size:1.15rem; font-weight:600; color: var(--text-primary); letter-spacing:.5px; }
+    .team-name { margin:0; font-size:.9rem; line-height:1.2; color: var(--text-muted); overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; }
 
     .card {
       background: var(--bg-card);
@@ -88,24 +88,15 @@
 
 
     /* Responsive design */
-    @media (max-width: 1200px) {
-        .item {
-            width: calc(33.33% - 50px); /* 3 items per row */
-        }
+    @media (max-width: 900px) {
+        .item { grid-template-columns: 110px 1fr; padding: .85rem 1rem; }
+        .item img { width: 100px; height: 100px; }
     }
-    @media (max-width: 950px) {
-        .item {
-            width: calc(60% - 50px); /* 2 items per row */
-        }
-    }
-    @media (max-width: 600px) {
-        .item {
-            width: calc(100% - 50px); /* 1 item per row */
-        }
-        .item img {
-            width: 100px; /* Adjust image size for smaller screens */
-            height: 100px; /* Adjust image size for smaller screens */
-        }
+    @media (max-width: 560px) {
+        .item { grid-template-columns: 80px 1fr; }
+        .item img { width: 70px; height: 70px; }
+        .team-number { font-size:1rem; }
+    .team-name { font-size:.8rem; -webkit-line-clamp:4; line-clamp:4; }
     }
 
 

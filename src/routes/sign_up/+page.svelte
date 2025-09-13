@@ -1,6 +1,6 @@
 <script>
     import { post } from "$lib/apis";
-    import { docTitle } from "$lib/frontendutil";
+    import { docTitle, validatePasswordComplexity } from "$lib/frontendutil";
     import { toast } from "svelte-hot-french-toast";
 
     docTitle("Sign Up");
@@ -19,9 +19,8 @@
     function validEmail() {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
-    function validPassword() {
-        return password.length >= 8;
-    }
+    function validPassword() { return validatePasswordComplexity(password).valid; }
+    function passwordIssues() { return validatePasswordComplexity(password).issues; }
 
     function next() {
         if (step === 1 && !validTeam()) return;
@@ -74,6 +73,7 @@
                 <div class="field">
                     <label for="team_num">Team Number</label>
                     <input id="team_num" type="number" bind:value={team_num} placeholder="1676" />
+                    {#if team_num !== '' && !validTeam()}<div class="error-text">Enter a positive whole number</div>{/if}
                 </div>
                 <div class="actions">
                     <button class="btn btn-primary" disabled={!validTeam()} onclick={next}>Next</button>
@@ -86,6 +86,7 @@
                 <div class="field">
                     <label for="email">Email</label>
                     <input id="email" type="email" bind:value={email} placeholder="you@example.com" />
+                    {#if email !== '' && !validEmail()}<div class="error-text">Enter a valid email address</div>{/if}
                 </div>
                 <div class="actions">
                     <button class="btn" onclick={back}>Back</button>
@@ -95,13 +96,20 @@
         {:else if step === 3}
             <div class="pane">
                 <h1>Secure Account</h1>
-                <p class="helper">Password must be at least 8 characters</p>
+                <p class="helper">Password must be at least 8 characters and contain two of: uppercase, number, special</p>
                 <div class="field">
                     <label for="password">Password</label>
                     <div class="password-wrapper">
                         <input id="password" type={showPassword ? 'text' : 'password'} bind:value={password} placeholder="••••••••" />
                         <button type="button" class="toggle" onclick={() => showPassword=!showPassword}>{showPassword? 'Hide':'Show'}</button>
                     </div>
+                    {#if password !== '' && !validPassword()}
+                        <ul class="pw-issues">
+                            {#each passwordIssues() as issue}
+                                <li>{issue}</li>
+                            {/each}
+                        </ul>
+                    {/if}
                 </div>
                 <div class="actions">
                     <button class="btn" onclick={back}>Back</button>
@@ -144,5 +152,8 @@
     .foot-note { margin-top:1.5rem; text-align:center; font-size:.75rem; color: var(--text-muted); }
     .foot-note a { color: var(--primary); }
     .center { text-align:center; }
+    .error-text { color: var(--danger, #ff5b5b); font-size:.7rem; margin-top:.15rem; }
+    .pw-issues { margin:.4rem 0 0; padding-left:1rem; color: var(--danger, #ff5b5b); font-size:.65rem; line-height:1.2; }
+    .pw-issues li { list-style: disc; }
     @keyframes fade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0);} }
 </style>

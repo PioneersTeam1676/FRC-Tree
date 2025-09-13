@@ -11,9 +11,15 @@ export const POST: RequestHandler = async ({ request }) => {
     const email: string = body.email;
     const password: string = body.password;
 
-    // Validate required params
-    if (team_num_raw === undefined || team_num_raw === null || email === undefined || password === undefined) {
-        return responseError("Missing parameters", HTTP.BAD_REQUEST);
+    // Validate required params (explicit messages for easier client UX)
+    if (team_num_raw === undefined || team_num_raw === null) {
+        return responseError("team_num is required", HTTP.BAD_REQUEST);
+    }
+    if (email === undefined || email === null || String(email).trim() === "") {
+        return responseError("email is required", HTTP.BAD_REQUEST);
+    }
+    if (password === undefined || password === null || String(password) === "") {
+        return responseError("password is required", HTTP.BAD_REQUEST);
     }
 
     // team_num can arrive as string or number
@@ -28,20 +34,30 @@ export const POST: RequestHandler = async ({ request }) => {
         return responseError(`email (${email}) is not a valid email address (must pass ${emailRegex})`, HTTP.BAD_REQUEST);
     }
 
-    // Validate password
+    // Validate password complexity
+    // Policy: minimum 8 chars AND at least 2 of 3 categories: (special char, uppercase letter, digit)
     if (typeof password !== "string" || password.length < 8) {
-        return responseError("password must be at least eight characters long", HTTP.BAD_REQUEST);
+        return responseError("password must be at least 8 characters long", HTTP.BAD_REQUEST);
+    }
+    const hasUpper = /[A-Z]/.test(password);
+    const hasDigit = /\d/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+    const categories = [hasUpper, hasDigit, hasSpecial].filter(Boolean).length;
+    if (categories < 2) {
+        return responseError("password must include at least two of: uppercase letter, number, special character", HTTP.BAD_REQUEST);
     }
 
     const pool = await mysqlPool();
 
-    // Prevent duplicate accounts by email
+    // Prevent duplicate accounts by email or team number (each team_num may only sign up once)
     try {
-        const existing = await pool
-            .query(`SELECT uid FROM frclink_users WHERE email = ? LIMIT 1`, [email])
-            .then(([rows]) => rows as any[]);
-        if (existing.length > 0) {
+        const [existingEmail]: any = await pool.query(`SELECT uid FROM frclink_users WHERE email = ? LIMIT 1`, [email]);
+        if (existingEmail.length > 0) {
             return responseError(`an account with ${email} already exists`, 409);
+        }
+        const [existingTeam]: any = await pool.query(`SELECT uid FROM frclink_users WHERE team_num = ? LIMIT 1`, [team_num]);
+        if (existingTeam.length > 0) {
+            return responseError(`a user for team ${team_num} already exists`, 409);
         }
     } catch (e) {
         console.trace("Error checking for existing user", e);

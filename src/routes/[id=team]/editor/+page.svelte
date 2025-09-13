@@ -82,20 +82,44 @@
         });
     });
 
-    function addLink() {
-        links = [...links, { id: undefined, title: "", description: "", url: "", icon: "" }];
-    }
+    // --- Icon Presets ------------------------------------------------------
+    const PRESET_ICONS = [
+        { key: 'youtube', label: 'YouTube', icon: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_(2017).svg' },
+        { key: 'instagram', label: 'Instagram', icon: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png' },
+        { key: 'twitter', label: 'Twitter / X', icon: 'https://abs.twimg.com/icons/apple-touch-icon-192x192.png' },
+        { key: 'facebook', label: 'Facebook', icon: 'https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico' },
+        { key: 'github', label: 'GitHub', icon: 'https://github.githubassets.com/favicons/favicon.png' }
+    ];
 
-    function removeLink(idx) {
-        const link = links[idx];
-        if (link && link.id) {
-            deletedIds = [...deletedIds, link.id];
+    function ensureLinkDefaults(link) {
+        if (!link) return link;
+        if (!link.icon_mode) link.icon_mode = link.icon ? 'custom' : 'preset';
+        if (!link.icon_key) link.icon_key = 'youtube';
+        if (link.icon_mode === 'preset') {
+            const preset = PRESET_ICONS.find(p => p.key === link.icon_key) || PRESET_ICONS[0];
+            link.icon = preset.icon;
+        } else if (link.icon_mode === 'custom') {
+            if (link.custom_icon) link.icon = link.custom_icon;
         }
-        links = links.filter((_, i) => i !== idx);
+        return link;
     }
 
+    function addLink() {
+        links = [...links, ensureLinkDefaults({ id: undefined, title: "", description: "", url: "", icon: "", icon_mode: 'preset', icon_key: 'youtube', custom_icon: '' })];
+    }
+
+    // Override load link mapping with normalization (replaces earlier mapping)
+    // NOTE: we reassign inside load after data fetch; easiest by monkey patching load result handler
+    const _origLoad = load;
+    load = async function() {
+        await _origLoad();
+        links = links.map(l => ensureLinkDefaults(l));
+    }
+
+    // Adjust save to only send required fields to server (strip editor-only metadata)
     async function save() {
-        const payload = { ...formData, links, deletedIds };
+        const cleanedLinks = links.map(l => ({ id: l.id, title: l.title, description: l.description, url: l.url, icon: ensureLinkDefaults(l).icon }));
+        const payload = { ...formData, links: cleanedLinks, deletedIds };
         toast.promise(
             (async () => {
                 const res = await post(window.location.pathname, payload);
@@ -104,7 +128,7 @@
                         formData = { ...res.data.info[0] };
                     }
                     if (Array.isArray(res.data?.links)) {
-                        links = res.data.links.map(l => ({ ...l }));
+                        links = res.data.links.map(l => ensureLinkDefaults({ ...l, custom_icon: '' }));
                         deletedIds = [];
                     }
                 } else {
@@ -189,8 +213,25 @@
                             <input id={"link_url_"+i} type="url" bind:value={link.url} />
                         </div>
                         <div class="input-group">
-                            <label for={"link_icon_"+i}>Icon URL</label>
-                            <input id={"link_icon_"+i} type="url" bind:value={link.icon} />
+                            <label for={"link_icon_mode_"+i}>Icon</label>
+                            <div class="icon-config">
+                                <select id={"link_icon_mode_"+i} bind:value={link.icon_mode} onchange={() => { if (link.icon_mode === 'preset') link.custom_icon=''; ensureLinkDefaults(link); links=[...links]; }}>
+                                    <option value="preset">Preset</option>
+                                    <option value="custom">Custom URL</option>
+                                </select>
+                                {#if link.icon_mode === 'preset'}
+                                    <select bind:value={link.icon_key} onchange={() => { ensureLinkDefaults(link); links=[...links]; }}>
+                                        {#each PRESET_ICONS as preset}
+                                            <option value={preset.key}>{preset.label}</option>
+                                        {/each}
+                                    </select>
+                                    {#if link.icon}
+                                        <div class="icon-preview"><img alt={link.icon_key + ' icon'} src={link.icon} /></div>
+                                    {/if}
+                                {:else}
+                                    <input placeholder="https://example.com/icon.png" type="url" bind:value={link.custom_icon} oninput={() => { link.icon = link.custom_icon; links=[...links]; }} />
+                                {/if}
+                            </div>
                         </div>
                     </div>
                     <div class="link-actions">
@@ -236,5 +277,10 @@
         gap: var(--space-sm);
         margin-top: var(--space-sm);
     }
+
+    .icon-config { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+    .icon-config select, .icon-config input { flex:0 0 auto; }
+    .icon-preview { width:32px; height:32px; display:flex; align-items:center; justify-content:center; }
+    .icon-preview img { max-width:100%; max-height:100%; border-radius:4px; box-shadow:0 0 0 1px var(--border-light); }
 
 </style>

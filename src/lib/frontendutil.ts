@@ -26,3 +26,23 @@ export function docTitle(title: string, override: boolean = false): void {
         }
     });
 }
+
+// Password validation shared logic (client-only helper)
+// Policy: minimum 8 chars AND at least two of these categories:
+//  - Uppercase letter A-Z
+//  - Digit 0-9
+//  - Special (non-alphanumeric)
+export function validatePasswordComplexity(pw: string): { valid: boolean; issues: string[] } {
+    const issues: string[] = [];
+    if (typeof pw !== 'string' || pw.length < 8) {
+        issues.push('at least 8 characters');
+    }
+    const hasUpper = /[A-Z]/.test(pw);
+    const hasDigit = /\d/.test(pw);
+    const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+    const categories = [hasUpper, hasDigit, hasSpecial].filter(Boolean).length;
+    if (categories < 2) {
+        issues.push('at least two of: uppercase, number, special');
+    }
+    return { valid: issues.length === 0, issues };
+}

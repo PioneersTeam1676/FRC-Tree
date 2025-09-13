@@ -1,28 +1,14 @@
-import { mysqlConnection, mysqlPool } from "$lib/db/mysql";
+import { mysqlPool } from "$lib/db/mysql";
 
-export async function load( { params }) {
-
-    // let connection = await mysqlConnection();
-    let connection = await mysqlPool();
-
+export async function load() {
+    const pool = await mysqlPool();
     try {
-        let info = await connection
+        const info = await pool
             .query(`SELECT * FROM frclink_info`)
-            .then(([rows, fields]) => {
-                console.log(rows);
-                return rows; 
-            });
-
-        let results = {
-            info: info
-        };
-        return {
-            data: results
-        };
-    } catch(error) {
-        console.error("we got an error!")
-        console.log(error)
-        return error;
+            .then(([rows]) => rows);
+        return { info, loadError: null };
+    } catch (err) {
+        console.error("Error loading gallery info", err);
+        return { info: [], loadError: 'Failed to load gallery data' };
     }
-
 }

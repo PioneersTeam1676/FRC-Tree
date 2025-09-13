@@ -9,8 +9,8 @@
 
     function search(event) {
         if (event.key === "Enter") {
-            console.log(event.target.value);
-            window.location.href = `/search/${event.target.value}`;
+            const val = event.target.value?.trim();
+            if (val) window.location.href = `/search/${encodeURIComponent(val)}`;
         }
     }
 
@@ -27,20 +27,19 @@
     }
 
 
-onMount(() => {
-    window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
-          }
-        }
-    }
-}
-})
+    // Close menu when clicking outside (more scoped & accessible)
+    onMount(() => {
+        const handler = (e) => {
+            const dropdown = document.getElementById('mobile-menu');
+            const toggle = document.getElementById('mobile-menu-toggle');
+            if (!dropdown || !toggle) return;
+            if (show && !dropdown.contains(e.target) && !toggle.contains(e.target)) {
+                show = false;
+            }
+        };
+        window.addEventListener('click', handler);
+        return () => window.removeEventListener('click', handler);
+    });
 
 
 
@@ -60,9 +59,9 @@ onMount(() => {
     </div>
     <div class="button-container">
         <a href="/gallery"><button class="btn btn-1 font hide-on-small-screen">Gallery</button></a>
-        <button class="btn btn-1 font show-on-small-screen dropbtn" onclick={() => {dropMenuDown()}}>Menu</button>
+        <button id="mobile-menu-toggle" aria-haspopup="true" aria-expanded={show} aria-controls="mobile-menu" class="btn btn-1 font show-on-small-screen dropbtn" onclick={() => {dropMenuDown()}}>Menu</button>
         <div class="dropdown">
-            <div id="myDropdown" class="dropdown-content show-on-small-screen {show ? "show" : ""}">
+            <div id="mobile-menu" class="dropdown-content show-on-small-screen {show ? "show" : ""}" role="menu">
                 <a href="/gallery" class="show-on-small-screen">Gallery</a>
                 <hr>
                 <a href="/sign_up" class="show-on-small-screen">Sign Up</a>
@@ -229,16 +228,18 @@ onMount(() => {
         /* Links inside the dropdown */
         .dropdown-content a {
             color: var(--text-primary);
-            padding: var(--space-md);
+            padding: var(--space-md) var(--space-lg);
             text-decoration: none;
             display: block;
-            font-size: 0.875rem;
-            transition: background-color 0.2s ease;
+            font-size: 0.95rem;
+            letter-spacing: .25px;
+            transition: background-color 0.15s ease, color 0.15s ease;
         }
 
         /* Change color of dropdown links on hover */
-        .dropdown-content a:hover {
+        .dropdown-content a:hover, .dropdown-content a:focus {
             background-color: var(--bg-tertiary);
+            outline: none;
         }
 
         /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
