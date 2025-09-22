@@ -10,6 +10,8 @@ export const POST: RequestHandler = async ({ request }) => {
     const team_num_raw = body.team_num;
     const email: string = body.email;
     const password: string = body.password;
+    const agree_terms: boolean = !!body.agree_terms;
+    const agree_privacy: boolean = !!body.agree_privacy;
 
     // Validate required params (explicit messages for easier client UX)
     if (team_num_raw === undefined || team_num_raw === null) {
@@ -20,6 +22,11 @@ export const POST: RequestHandler = async ({ request }) => {
     }
     if (password === undefined || password === null || String(password) === "") {
         return responseError("password is required", HTTP.BAD_REQUEST);
+    }
+
+    // Validate policy acceptance
+    if (!agree_terms || !agree_privacy) {
+        return responseError("You must agree to the Terms of Service and Privacy Policy", HTTP.BAD_REQUEST);
     }
 
     // team_num can arrive as string or number
@@ -68,42 +75,24 @@ export const POST: RequestHandler = async ({ request }) => {
     const { passhash, salt } = createHashAndSalt(password);
 
     try {
-        // Detect if joincodeid column exists and whether it's nullable
-        const columns = await pool
-            .query(`SHOW COLUMNS FROM frclink_users LIKE 'joincodeid'`)
+        // Detect if acceptance columns exist (keep backward compatibility for optional columns)
+        const acceptanceCols = await pool
+            .query(`SHOW COLUMNS FROM frclink_users WHERE Field IN ('accepted_terms_at','accepted_privacy_at')`)
             .then(([rows]) => rows as any[]);
+        const hasAcceptedTerms = acceptanceCols.some(c => c.Field === 'accepted_terms_at');
+        const hasAcceptedPrivacy = acceptanceCols.some(c => c.Field === 'accepted_privacy_at');
+        const now = new Date();
 
-        const hasJoinCodeId = columns.length > 0;
-        const joincodeIsNullable = hasJoinCodeId ? (columns[0].Null === 'YES') : false;
-
-        if (!hasJoinCodeId) {
-            // Schema without joincodeid
+        if (hasAcceptedTerms && hasAcceptedPrivacy) {
+            await pool.query(
+                `INSERT INTO frclink_users (team_num, email, passhash, salt, accepted_terms_at, accepted_privacy_at) VALUES (?, ?, ?, ?, ?, ?)`,
+                [team_num, email, passhash, salt, now, now]
+            );
+        } else {
             await pool.query(
                 `INSERT INTO frclink_users (team_num, email, passhash, salt) VALUES (?, ?, ?, ?)`,
                 [team_num, email, passhash, salt]
             );
-        } else if (joincodeIsNullable) {
-            // Include explicit NULL for joincodeid if allowed
-            await pool.query(
-                `INSERT INTO frclink_users (joincodeid, team_num, email, passhash, salt) VALUES (NULL, ?, ?, ?, ?)`,
-                [team_num, email, passhash, salt]
-            );
-        } else {
-            // Column exists and is NOT NULL; try insert without it to use any default, else surface clear guidance
-            try {
-                await pool.query(
-                    `INSERT INTO frclink_users (team_num, email, passhash, salt) VALUES (?, ?, ?, ?)`,
-                    [team_num, email, passhash, salt]
-                );
-            } catch (inner: any) {
-                if (inner && (inner.code === 'ER_NO_DEFAULT_FOR_FIELD' || inner.errno === 1364)) {
-                    return responseError(
-                        "Database requires a non-null joincodeid. To allow open sign-up, make frclink_users.joincodeid nullable or provide a default.",
-                        HTTP.INTERNAL_SERVER_ERROR
-                    );
-                }
-                throw inner;
-            }
         }
     } catch (e: any) {
         console.trace("Error inserting user", e);

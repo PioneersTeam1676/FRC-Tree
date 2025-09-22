@@ -1,8 +1,6 @@
 import { mysqlConnection } from "$lib/db/mysql";
 import { getTeamFromDB, getTeamFromTBA } from "$lib/db/teams";
 import { error, redirect } from "@sveltejs/kit";
-// import { TBA_KEY } from '$env/static/private';
-let TBA_KEY = "va0mdQ50z5Oh5nLmYX6TQGUiNsMDHdLUHszu6vGRT8hpGEnzpcYFgJQ2iM6rHUVV";
 
 export async function load({ params }) {
 

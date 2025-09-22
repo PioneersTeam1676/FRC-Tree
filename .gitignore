@@ -1,4 +1,10 @@
+/.env
+/.env.local
 node_modules
+dist
+buildnode_modules
+.env
+
 
 .htaccess
 src/lib/db/db.json.js

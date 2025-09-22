@@ -49,17 +49,15 @@
 
         <div class="all-links">
             {#each data.data.links as link}
-                <!-- <a href="{link.url}" target="_blank"> -->
-                    <button class="tree-buttons" onclick={() => { window.open(link.url, "_blank").focus(); }}>
-                        <div class="tree-container">
-                            <img class="button-logo" src="{link.icon}" alt="button logo">
-                            <div class="link-content">
-                                <p style="color: {primIsWhite ? "black" : "white"}" class="tree-header">{link.title}</p>
-                                <p style="color: {primIsWhite ? "black" : "white"}" class="bg-info">{link.description}</p>
-                            </div>
+                <button class="tree-buttons" onclick={() => { window.open(link.url, "_blank").focus(); }}>
+                    <div class="tree-container">
+                        <img class="button-logo" src="{link.icon}" alt="button logo">
+                        <div class="link-content">
+                            <p class="tree-header force-black">{link.title}</p>
+                            <p class="bg-info force-black">{link.description}</p>
                         </div>
-                    </button>
-                <!-- </a> -->
+                    </div>
+                </button>
             {/each}
         </div>
     </div>
@@ -163,7 +161,7 @@
     }
 
     .tree-header {
-        color: white;
+        color: white; /* default; overridden by .force-black */
         font-family: 'Helvetica', 'Arial', sans-serif;
         font-weight: bold;
         font-size: 1.5em; /* Smaller font size */
@@ -172,10 +170,13 @@
 
     .bg-info {
         margin-top: 0.5vh;
-        color: white;
+        color: white; /* default; overridden by .force-black */
         font-family: 'Helvetica', 'Arial', sans-serif;
         font-size: 1.2em; /* Smaller font size */
     }
+
+    /* Force black text for readability regardless of primary background */
+    .force-black { color: #000 !important; text-shadow: none; }
 
     /* Responsive adjustments */
     @media (max-width: 768px) {

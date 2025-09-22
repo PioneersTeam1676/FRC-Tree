@@ -1,4 +1,5 @@
-let TBA_KEY = "va0mdQ50z5Oh5nLmYX6TQGUiNsMDHdLUHszu6vGRT8hpGEnzpcYFgJQ2iM6rHUVV	";
+import 'dotenv/config';
+const TBA_KEY = process.env.TBA_KEY || ""; // empty string if not provided
 import { error } from "@sveltejs/kit";
 import { mysqlConnection, mysqlPool } from "./mysql";
 
@@ -53,6 +54,10 @@ export async function getTeamFromDB(teamNum: number): Promise<Team | undefined> 
 }
 
 export async function getTeamFromTBA(teamNum: number): Promise<Team | undefined> {
+    if (!TBA_KEY) {
+        console.error("TBA_KEY not set in environment. Set TBA_KEY in your .env file.");
+        return undefined;
+    }
     const path = `https://www.thebluealliance.com/api/v3/team/frc${teamNum}`;
     const json = await fetch(path, {
         method: "GET",
@@ -102,23 +107,31 @@ export async function getTeamFromTBA(teamNum: number): Promise<Team | undefined>
         },
     };
 
+    const githubIcon = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic-00.iconduck.com%2Fassets.00%2Fgithub-icon-2048x2048-91rgqivh.png&f=1&nofb=1&ipt=5c842f4ec230f47f6ca5a6b41360b7ca6506a575212d7d72c95a62f126b713b3&ipo=images";
+
     const links = json_links.map(link => {
         const data = stuff[link.type];
+        let url: string;
+        let icon: string;
+        let title: string;
+        let description: string;
         if (data) {
-            return {
-                url: data.url + link.foreign_key,
-                icon: data.icon,
-                title: data.name,
-                description: "@" + link.foreign_key,
-            }
+            url = data.url + link.foreign_key;
+            icon = data.icon;
+            title = data.name;
+            description = "@" + link.foreign_key;
         } else {
-            return {
-                url: link.direct_url,
-                icon: "",
-                title: link.type,
-                description: link.foreign_url,
-            }
-        };
+            url = link.direct_url;
+            icon = "";
+            title = link.type;
+            description = link.foreign_url;
+        }
+        // Fallback: if URL indicates a GitHub link but no icon assigned (non github-profile type)
+        if (!icon && typeof url === 'string' && url.includes('github.com')) {
+            icon = githubIcon;
+            title = title === link.type ? 'GitHub' : title; // improve title if it's just the raw type
+        }
+        return { url, icon, title, description };
     });
 
     const year = new Date().getFullYear();

@@ -3,6 +3,7 @@
     import logo from "$lib/assets/LinkTreeLogo-02.png";
     import "./global.css";
     import Navbar from "../Navbar.svelte";
+    import Footer from "../Footer.svelte";
     import { page } from '$app/stores';
     import { onMount } from "svelte";
     
@@ -334,6 +335,7 @@
             {@render children()}
         {/if}
     </div>
+    <Footer />
 </div>
 
 <Toaster />

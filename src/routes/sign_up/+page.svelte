@@ -10,6 +10,8 @@
     let email = $state("");
     let password = $state("");
     let showPassword = $state(false);
+    let agreeTerms = $state(false);
+    let agreePrivacy = $state(false);
     let busy = $state(false);
 
     function validTeam() {
@@ -22,10 +24,14 @@
     function validPassword() { return validatePasswordComplexity(password).valid; }
     function passwordIssues() { return validatePasswordComplexity(password).issues; }
 
+    function canSubmitAgreements() {
+        return agreeTerms && agreePrivacy;
+    }
+
     function next() {
         if (step === 1 && !validTeam()) return;
         if (step === 2 && !validEmail()) return;
-        if (step === 3 && !validPassword()) return;
+        if (step === 3 && (!validPassword() || !canSubmitAgreements())) return;
         step++;
         if (step === 4) submitWrapper();
     }
@@ -33,7 +39,7 @@
 
     async function submit() {
         busy = true;
-        const res = await post("/sign_up/create", { team_num: Number(team_num), email, password });
+        const res = await post("/sign_up/create", { team_num: Number(team_num), email, password, agree_terms: agreeTerms, agree_privacy: agreePrivacy });
         busy = false;
         if (res.isSuccess()) {
             step = 4;
@@ -111,9 +117,22 @@
                         </ul>
                     {/if}
                 </div>
+                <div class="agreements">
+                    <label class="agree-item">
+                        <input type="checkbox" bind:checked={agreeTerms} />
+                        <span>I agree to the <a target="_blank" href="/tos">Terms of Service</a></span>
+                    </label>
+                    <label class="agree-item">
+                        <input type="checkbox" bind:checked={agreePrivacy} />
+                        <span>I have read the <a target="_blank" href="/privacy">Privacy Policy</a></span>
+                    </label>
+                    {#if (!agreeTerms || !agreePrivacy) && validPassword()}
+                        <div class="error-text" style="margin-top:.4rem">You must agree to both policies to continue.</div>
+                    {/if}
+                </div>
                 <div class="actions">
                     <button class="btn" onclick={back}>Back</button>
-                    <button class="btn btn-primary" disabled={!validPassword() || busy} onclick={next}>{busy? 'Working...' : 'Create Account'}</button>
+                    <button class="btn btn-primary" disabled={!validPassword() || !canSubmitAgreements() || busy} onclick={next}>{busy? 'Working...' : 'Create Account'}</button>
                 </div>
             </div>
         {:else if step === 4}

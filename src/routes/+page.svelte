@@ -102,12 +102,12 @@
               <strong>Comprehensive Team Profiles:</strong> Access team details, location data, awards, and administrator-set links.
             </div>
           </li>
-          <li class="feature-item">
+          <!-- <li class="feature-item">
             <span class="feature-icon">🔗</span>
             <div>
               <strong>Integrated Contact System:</strong> Connect through social media profiles, websites, blogs, and custom links.
             </div>
-          </li>
+          </li> -->
           <li class="feature-item">
             <span class="feature-icon">🔐</span>
             <div>
