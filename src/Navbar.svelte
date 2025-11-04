@@ -1,6 +1,7 @@
 <script>
     let { loggedIn, loggedInAs } = $props();
     import logo from "$lib/assets/LinkTreeLogo-02.png";
+    import piSmall from "$lib/assets/pi-small.png";
 
     import { onMount } from "svelte";
     onMount(() => {
@@ -83,7 +84,7 @@
         <a href="https://team1676.com"
             ><img
                 class="header-pfp"
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fyt3.ggpht.com%2Fa%2FAGF-l7-mM82_wzV3-rb20GXvq8nDm-8dFzEYPBY9%3Ds900-c-k-c0xffffffff-no-rj-mo&f=1&nofb=1&ipt=258c65eef72ceda28dcc447625cfa9c935e781108d34fd1d1affe361e8c6aa90&ipo=images"
+                src={piSmall}
                 alt="profile pic"
             /></a
         >

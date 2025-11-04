@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "vite build && pm2 restart preview-server",
 		"preview": "vite preview",
 		"seed": "npx tsx src/lib/db/seed.ts",
 		"sync:teams": "npx tsx src/lib/db/sync_missing_teams.ts",
