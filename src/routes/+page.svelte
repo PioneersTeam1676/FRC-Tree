@@ -78,6 +78,45 @@
   </div>
 </div>
 
+<div class="section core-values-section">
+  <div class="section-content">
+    <h2 class="section-title">Core Values</h2>
+    <div class="section-divider"></div>
+    <div class="core-values-grid">
+      <div class="core-value-card">
+        <div class="core-value-icon">🔭</div>
+        <h3 class="core-value-name">Discovery</h3>
+        <p class="core-value-description">Exploring new ideas and possibilities to expand our horizons</p>
+      </div>
+      <div class="core-value-card">
+        <div class="core-value-icon">💡</div>
+        <h3 class="core-value-name">Innovation</h3>
+        <p class="core-value-description">Creating cutting-edge solutions that drive progress forward</p>
+      </div>
+      <div class="core-value-card">
+        <div class="core-value-icon">🚀</div>
+        <h3 class="core-value-name">Impact</h3>
+        <p class="core-value-description">Making meaningful difference in the FRC community and beyond</p>
+      </div>
+      <div class="core-value-card">
+        <div class="core-value-icon">🤝</div>
+        <h3 class="core-value-name">Inclusion</h3>
+        <p class="core-value-description">Welcoming all teams and fostering an inclusive community</p>
+      </div>
+      <div class="core-value-card">
+        <div class="core-value-icon">👥</div>
+        <h3 class="core-value-name">Teamwork</h3>
+        <p class="core-value-description">Collaborating together to achieve greater success</p>
+      </div>
+      <div class="core-value-card">
+        <div class="core-value-icon">🎉</div>
+        <h3 class="core-value-name">Fun</h3>
+        <p class="core-value-description">Enjoying the journey and celebrating our achievements</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="section features-section">
   <div class="section-content">
     <h2 class="section-title">Features</h2>
@@ -327,6 +366,52 @@
     margin: 0 auto;
   }
 
+  /* Core values grid styling */
+  .core-values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+  }
+
+  .core-value-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-xl);
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  .core-value-card:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .core-value-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .core-value-name {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .core-value-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
   /* Features grid styling */
   .features-grid {
     display: grid;
@@ -393,6 +478,10 @@
 
     .row {
       flex-direction: column;
+    }
+
+    .core-values-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
 
     .features-list {
